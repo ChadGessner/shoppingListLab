@@ -33,7 +33,6 @@ void GetTotal()
             
             break;
         }
-        List<List<List<List<List<string>>>>> fiveDeep;
         Console.Clear();
         Console.WriteLine($"mmm {FormatMenuKeys(-1, item)} excellent choice!");
         shoppingList.Add(item);
