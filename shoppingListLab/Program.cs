@@ -5,7 +5,6 @@ using System.Linq;
 List<string> shoppingList = new List<string>();
 Dictionary<string, double> menu = GetMenu();
 
-
 GetTotal();
 
 void GetTotal()
@@ -67,16 +66,21 @@ Dictionary<string,int> GetShoppingListItemsQuantity()
 string ItemizedRecipt()
 {
     Console.Clear();
-    Dictionary<string, int> ShoppingListItemQuantity = GetShoppingListItemsQuantity();
+    Dictionary<string, int> ShoppingListItemsQuantity = GetShoppingListItemsQuantity();
+    Dictionary<string, double> ShoppingListItemTotalPrice = GetShoppingListItemsQuantity()
+        .ToDictionary(k => k.Key, k => k.Value * menu[k.Key])
+        .OrderByDescending(kv => kv.Value)
+        .ToDictionary(d => d.Key, d => d.Value);
+
     int magicNumber = shoppingList.OrderByDescending(s => s.Length).ToArray()[0].Length + 19; //14
     string total = $"{shoppingList.Select(item => menu[item]).Sum():c}";
     string stars = new String('*', (magicNumber / 2) - 3); // -3
     string recipt = $"{stars}RECIPT{stars}\n";
-    foreach(KeyValuePair<string,int> item in ShoppingListItemQuantity)
+    foreach(KeyValuePair<string,double> item in ShoppingListItemTotalPrice)
     {
-        bool isOnlyOne = item.Value == 1;
-        string currentItem = isOnlyOne ? FormatMenuKeys(-1, item.Key) : $"{FormatMenuKeys(-1, item.Key)} x {item.Value} ";
-        string priceToString = isOnlyOne ? $"{menu[item.Key]:c}" : $"{(menu[item.Key] * item.Value):c}";
+        bool isOnlyOne = ShoppingListItemsQuantity[item.Key] == 1;
+        string currentItem = isOnlyOne ? FormatMenuKeys(-1, item.Key) : $"{FormatMenuKeys(-1, item.Key)} x {ShoppingListItemsQuantity[item.Key]} ";
+        string priceToString = isOnlyOne ? $"{menu[item.Key]:c}" : $"{item.Value:c}";
         int spaceMod = currentItem.Length + priceToString.Length; // problem
         recipt += $"{currentItem}{new string(' ', Math.Abs(magicNumber - spaceMod))}{priceToString}\n";
     }
@@ -91,17 +95,24 @@ string ItemizedRecipt()
 
 double GetSum(List<string> shoppingList)
 {
-    return shoppingList.Select(item => menu[item]).Sum();
+    return shoppingList
+        .Select(item => menu[item])
+        .Sum();
 }
 string GetMin(List<string> shoppingList)
 {
-    return shoppingList.OrderBy(item => menu[item]).ToArray()[0];
-}
-string GetMax(List<string> shoppingList)
-{
-    return shoppingList.OrderByDescending(item => menu[item]).ToArray()[0];
+    return shoppingList
+        .OrderBy(item => menu[item])
+        .ToArray().First();
 }
 
+string GetMax(List<string> shoppingList)
+{
+    return shoppingList
+        .OrderByDescending(item => menu[item])
+        .ToArray()
+        .First();
+}
 
 Dictionary<string, double> GetMenu()
 {
