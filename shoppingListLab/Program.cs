@@ -67,10 +67,7 @@ string ItemizedRecipt()
 {
     Console.Clear();
     Dictionary<string, int> ShoppingListItemsQuantity = GetShoppingListItemsQuantity();
-    Dictionary<string, double> ShoppingListItemTotalPrice = GetShoppingListItemsQuantity()
-        .ToDictionary(k => k.Key, k => k.Value * menu[k.Key])
-        .OrderByDescending(kv => kv.Value)
-        .ToDictionary(d => d.Key, d => d.Value);
+    Dictionary<string, double> ShoppingListItemTotalPrice = GetShoppingListItemsOrderedByPriceTimesQuantity();
 
     int magicNumber = shoppingList.OrderByDescending(s => s.Length).ToArray()[0].Length + 19; //14
     string total = $"{shoppingList.Select(item => menu[item]).Sum():c}";
@@ -91,6 +88,14 @@ string ItemizedRecipt()
     recipt += $"Your most expensive item was {FormatMenuKeys(-1, GetMax(shoppingList))} at the outrageous price of {menu[GetMax(shoppingList)]:c}... \n";
     recipt += $"Your total is {GetSum(shoppingList):c} thank you for shopping with us today!";
     return recipt;
+}
+
+Dictionary<string,double> GetShoppingListItemsOrderedByPriceTimesQuantity()
+{
+    return GetShoppingListItemsQuantity()
+        .ToDictionary(k => k.Key, k => k.Value * menu[k.Key])
+        .OrderByDescending(kv => kv.Value)
+        .ToDictionary(d => d.Key, d => d.Value);
 }
 
 double GetSum(List<string> shoppingList)
@@ -119,7 +124,7 @@ Dictionary<string, double> GetMenu()
     Dictionary<string, double> menu = new Dictionary<string, double>();
     for (int i = 0; i < 8; i++)
     {
-        menu[$"{(Item)i}"] = (i + .09) * 2;
+        menu[$"{(Item)i}"] = (i + .64) * 2;
     }
     return menu;
 }
